@@ -33,3 +33,4 @@
 
 # Vscode configuration files
 .vscode/
+.DS_Store/
