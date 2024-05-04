@@ -56,7 +56,6 @@ int main() {
     mat.compress();
 
     result_mat = mat * mat;
-    auto result_mat
     return 0;
 }
 ```
