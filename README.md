@@ -49,7 +49,7 @@ int main() {
 
     algebra::Matrix<double, algebra::Ordering::RowMajor> mat;
     algebra::Matrix<double, algebra::Ordering::RowMajor> result_mat;
-    mat.read_from_matrix_market("pores_1.mtx"); // read from the lnsp_131.mtx https://math.nist.gov/MatrixMarket/data/Harwell-Boeing/lns/lnsp_131.html
+    mat.read_from_matrix_market("lnsp_131.mtx"); // read from the lnsp_131.mtx https://math.nist.gov/MatrixMarket/data/Harwell-Boeing/lns/lnsp_131.html
 
     auto norm1 = mat.norm<algebra::Norm::One>();
 
