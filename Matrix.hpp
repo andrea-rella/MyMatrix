@@ -1,5 +1,5 @@
-#ifndef MATRIX_DAF0488D_F1D5_4867_A4E9_6FD6AAE44CE8
-#define MATRIX_DAF0488D_F1D5_4867_A4E9_6FD6AAE44CE8
+#ifndef MATRIX_B6315096_CAAF_46D4_853C_D30943434383
+#define MATRIX_B6315096_CAAF_46D4_853C_D30943434383
 
 #include <map>
 #include <array>
@@ -144,13 +144,13 @@ namespace algebra
         double norm() const;
 
         // Vec multiplication
-        friend std::vector<T> operator* <T>(const Matrix<T, StorageOrder> &, const std::vector<T> &);
+        friend std::vector<T> operator* <T, StorageOrder>(const Matrix<T, StorageOrder> &, const std::vector<T> &);
 
         // Matrix by Matrix
-        friend Matrix<T, StorageOrder> operator* <T>(const Matrix<T, StorageOrder> &, const Matrix<T, StorageOrder> &);
+        friend Matrix<T, StorageOrder> operator* <T, StorageOrder>(const Matrix<T, StorageOrder> &, const Matrix<T, StorageOrder> &);
     };
 }
 
 #include "Matrix_implementation.hpp"
 
-#endif /* MATRIX_DAF0488D_F1D5_4867_A4E9_6FD6AAE44CE8 */
+#endif /* MATRIX_B6315096_CAAF_46D4_853C_D30943434383 */
