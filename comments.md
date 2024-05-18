@@ -17,3 +17,13 @@ With the std::move you are not gaining anything. Moreover if you have
 Matrix C=A*B;
 ```
 then the compiler may implement copy elision (return value optimization) just by constructing C with the value provided by the multiplication (if is returns a value). If you use std::move the compiler will implement a move, which is however less efficient than copy elision!. Again, return by value is better.
+
+By the way, the compiler should have given you a warning about the std::move.
+```bash
+Matrix_implementation.hpp: In instantiation of ‘algebra::Matrix<T, StorageOrder> algebra::operator*(const Matrix<T, StorageOrder>&, const Matrix<T, StorageOrder>&) [with T = double; Ordering StorageOrder = algebra::Ordering::RowMajor]’:
+main.cpp:61:24:   required from here
+Matrix_implementation.hpp:659:34: warning: moving a local object in a return statement prevents copy elision [-Wpessimizing-move]
+  659 |         return std::move(matrix_C);
+  ```
+
+**A negative note** Matrix file is not given, so I could not run the test easily.
