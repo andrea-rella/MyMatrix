@@ -1,6 +1,6 @@
 #ifndef MATRIX_IMPLEMENTATION_CCC1361C_AF40_4256_829C_5ED86F87C4F0
 #define MATRIX_IMPLEMENTATION_CCC1361C_AF40_4256_829C_5ED86F87C4F0
-
+// clang-format off
 #include "Matrix.hpp"
 #include <iostream>
 #include <stdexcept>
@@ -14,6 +14,7 @@ namespace algebra
     //---------------------------------------------------------------------------
     template <ScalarOrComplex T, Ordering StorageOrder>
     Matrix<T, StorageOrder>::Matrix(std::size_t rows, std::size_t cols) : Rows(rows), Cols(cols), Compressed(false){};
+//@note take the habit of using {} insread of (): Rows{rows}, Cols{cols}, Compressed{false}. To get used to it. Here is irrelevant but in general is a good practice
 
     //---------------------------------------------------------------------------
 
@@ -39,6 +40,7 @@ namespace algebra
 
         if (new_rows >= Rows && new_cols >= Cols)
         {
+        
             Rows = new_rows;
             Cols = new_cols;
             return;
@@ -60,6 +62,7 @@ namespace algebra
             Rows = new_rows;
             Cols = new_cols;
         }
+        //@note If the matrix was in a compressed state, now is uncompressed. You should recompress again!
 
         return;
     }
@@ -114,7 +117,7 @@ namespace algebra
         Compressed = false;
 
         // Update the data member with new entries
-        Data = std::move(entries);
+        Data = std::move(entries); //@note nice using move here. I only do not understand why not filling Data directly
 
         return;
     }
@@ -127,6 +130,7 @@ namespace algebra
         if (Compressed)
         {
             std::cout << "Matrix is compressed. Decompress before printing." << std::endl;
+            //@note Not necessary to decompress before printing, you can print the compressed matrix as well
             return;
         }
 
@@ -154,12 +158,13 @@ namespace algebra
     template <ScalarOrComplex T, Ordering StorageOrder>
     const T &Matrix<T, StorageOrder>::operator()(std::size_t row, std::size_t col) const
     {
+        //@note There is no need to return a const T&. You can return directly a T, whihc is the most common treturn type for const methods
         if (row >= Rows || col >= Cols)
             throw std::out_of_range("Matrix indices out of range");
 
         std::size_t inner, outer;
 
-        if constexpr (StorageOrder == Ordering::RowMajor)
+        if constexpr (StorageOrder == Ordering::RowMajor) //@note nice
         {
             inner = row;
             outer = col;
@@ -173,6 +178,7 @@ namespace algebra
         if (Compressed)
         {
             // Compressed state
+            //@note If the inner indexes are ordered you can use the binary search algorithm to find the element
             for (std::size_t i = Inner_ptr[inner]; i < Inner_ptr[inner + 1]; ++i)
             {
                 if (Outer_idxs[i] == outer)
@@ -180,7 +186,7 @@ namespace algebra
                     return Values[i]; // Found element
                 }
             }
-            return T(); // Element not found (value is 0)
+            return T(); // Element not found (value is 0) @note better to return T{0}, to be sure! It works also for complex numbers
         }
         else
         {
@@ -213,6 +219,7 @@ namespace algebra
             else
                 // Element not found, add new element
                 return Data[{row, col}]; // Creates a new element with default value (0 for numeric types)
+                //@note if you want to be sure that the element is zero, you can use return (Data[{row, col}] = T{0}); instead
         }
     }
 
@@ -322,7 +329,7 @@ namespace algebra
                 std::size_t outer = Outer_idxs[j];
                 if constexpr (StorageOrder == Ordering::RowMajor)
                 {
-                    Data.emplace(std::array<std::size_t, 2>{inner, outer}, Values[j]);
+                    Data.emplace(std::array<std::size_t, 2>{inner, outer}, Values[j]);//@note good useing emplace here
                 }
                 else if constexpr (StorageOrder == Ordering::ColumnMajor)
                 {
@@ -343,7 +350,7 @@ namespace algebra
     template <Norm normType>
     double Matrix<T, StorageOrder>::norm() const
     {
-
+//@note good work, but normally higher order operations assume that the matrix is compressed, for simplicity
         if (!Compressed)
         {
             if constexpr (normType == Norm::One)
@@ -380,7 +387,7 @@ namespace algebra
                 return max_value;
             }
             else if constexpr (normType == Norm::Frobenius)
-            {
+            {//@note good use of standard algorithms
                 double sum = std::transform_reduce(Data.begin(), Data.end(), 0.0, std::plus<>(),
                                                    [](const auto &entry)
                                                    {
@@ -484,8 +491,12 @@ namespace algebra
      * in the values array will be the same. Therefore, the loop that multiplies non-zero values by corresponding
      * elements in the vector won't execute for that row because the start and end indices will be equal, effectively
      * skipping over the row.
+     * 
+     * @note Teacher: The previous note is correct. One of the advantages of a sparse format is that you skip the zero elements
      *
      * @note i decided not to use operator() to save on the overhead of calling a function everytime
+     * 
+     * @note Teacher: and this is a good choice. In general, you should avoid using operator() for performance reasons
      */
 
     template <ScalarOrComplex T, Ordering StorageOrder>
@@ -557,6 +568,8 @@ namespace algebra
              * c_ij = o_ji = \sum_k b_jk * a_ki where O = B^T*A^T for ColMajor
              * since for column major accessing the rows is not as efficient so we play with the fact that in trasposing the columns become
              * the rows and viceversa
+             * 
+             * @note Teacher: good! You are exploiting the properties of the matrix multiplication
              */
             matrix_C.compress();
 
@@ -644,6 +657,9 @@ namespace algebra
                 const T &valueA = entryA.second;
 
                 for (const auto &entryB : matrix_B.Data)
+                //@note you can use more modern cunstructs like for (auto const & [indexB, valueB] : matrix_B.Data) 
+                // and then auto const & [i,j]=indexB;
+                // to make the code more readable;
                 {
                     const auto &indexB = entryB.first;
                     const T &valueB = entryB.second;
@@ -656,7 +672,9 @@ namespace algebra
             }
         }
 
-        return std::move(matrix_C);
+        return std::move(matrix_C); 
+        //@note you gain nothing from the move. Returned values are rvlaues, so they will be moved when possible
+        //Actually, with std::move you block copy elision, so it may be even slower. Just return matrix_C; It is the best way.
     }
 
     //---------------------------------------------------------------------------

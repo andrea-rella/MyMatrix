@@ -1,6 +1,6 @@
 #ifndef MATRIX_C76222F2_8354_4C29_AB07_1C2D3389FAC4
 #define MATRIX_C76222F2_8354_4C29_AB07_1C2D3389FAC4
-
+// clang-format off
 #include <map>
 #include <array>
 #include <vector>
@@ -63,6 +63,10 @@ namespace algebra
                 if constexpr (StorageOrder == Ordering::ColumnMajor)
                 {
                     // Comparison logic for ColumnMajor
+                    //@note learn to expoit the facilities of the language to produce more elegant (and efficient) code. For instance, using std::tie
+                    // return std::tie(lhs[1], lhs[0]) < std::tie(rhs[1], rhs[0]);
+                    // Isn't it nicer than your solution? std::tie is efficient becouse it produces tuples of references, so no copies are made
+                    // and you rely on the fact that std::tuple has a lexicographic comparison operator
                     if (lhs[1] < rhs[1])
                         return true;
                     if (lhs[1] > rhs[1])
@@ -97,16 +101,18 @@ namespace algebra
 
         // State
         bool Compressed; // Check what's the default value for bool, in case modify the Default constructor
-
+        //@note the default value for bool is false, so you don't need to specify it, but if you are not sure, you can always specify it
+        // bool Compressed = false;
     public:
         Matrix() = default;
-        Matrix(Matrix &) = default;
-        Matrix(Matrix &&) = default;
+        Matrix(Matrix &) = default; //@note this is given by the compiler, you don't need to specify it
+        Matrix(Matrix &&) = default; //@note this is given by the compiler, you don't need to specify it
 
+//@note try to use doxygen to comment your classes and members, it is a de-facto standard for c++ code
         // Constructors
         Matrix(std::size_t, std::size_t);
 
-        // Default assignements
+        // Default assignements @note again these are given by the compiler, you don't need to specify them
         Matrix<T, StorageOrder> &operator=(const Matrix<T, StorageOrder> &) = default;
         Matrix<T, StorageOrder> &operator=(Matrix<T, StorageOrder> &&) = default;
 
