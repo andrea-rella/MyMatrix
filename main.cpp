@@ -9,7 +9,7 @@ int main()
     algebra::Matrix<double, algebra::Ordering::RowMajor> mat;
     algebra::Matrix<double, algebra::Ordering::RowMajor> result_mat;
 
-    mat.read_from_matrix_market("pores_1.mtx");
+    mat.read_from_matrix_market("lnsp_131.mtx");
 
     std::vector<double> v(mat.N_Cols(), 1.);
     std::vector<double> result;
